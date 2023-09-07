@@ -1,73 +1,71 @@
 import 'bootstrap'
 import './tela-base.css'
-import { IModelBase } from "../../models/base";
+import { IMidia } from "../../models/midia";
 
 export abstract class TelaBase {
 
     protected divConteudo: HTMLDivElement;
 
-    protected gerarCards(filmes: IModelBase[], subTitulo: string): void {
+    protected gerarCards(midias: IMidia[], tipoMidia: string): void {
 
-      console.log(filmes)
+        console.log(midias)
 
         const subtitulo = document.createElement('h2');
-        subtitulo.textContent = subTitulo;
-        subtitulo.classList.add('subtitulo')
+        subtitulo.textContent = tipoMidia;
+        subtitulo.classList.add('text-secondary', "fw-light", 'fs-3', 'text-center')
         this.divConteudo.appendChild(subtitulo);
 
-        const grid = document.createElement("div");
-        grid.classList.add('grid');
-        this.divConteudo.appendChild(grid);
+        for (let i = 0; i < midias.length; i++) {
+            const midia = midias[i];
 
-        for (let i = 0; i < filmes.length; i++) {
-            const filme = filmes[i];
+            if (midia.imagem == null) continue
 
-            const newCard = document.createElement("div");
-            newCard.classList.add("card");
-            newCard.id = filme.id.toString();
+            const card = document.createElement("div");
+            card.classList.add('col-xl-2', 'col-lg-4', 'col-md-6', 'col-sm-12', "card", 'p-2');
+            card.id = midia.id.toString();
 
-            newCard.setAttribute('tipo', filme.tipo);
+            card.setAttribute('tipo', midia.tipo);
 
-            const image = document.createElement("img");
-            image.src = `https://image.tmdb.org/t/p/w500${filme.imagemAlt}`;
-            newCard.appendChild(image);
+            const imagem = document.createElement("img");
+            imagem.src = `https://image.tmdb.org/t/p/w500${midia.imagem}`;
+            card.appendChild(imagem);
 
-            const title = document.createElement("p");
-            title.textContent = `${filme.nome}`;
-            title.classList.add('title');
-            newCard.appendChild(title);
+            const titulo = document.createElement("span");
+            titulo.textContent = `${midia.nome}`;
+            titulo.classList.add('col', 'text-center', 'p-2', 'fs-5');
+            card.appendChild(titulo)
 
             const linha = document.createElement("hr");
-            newCard.appendChild(linha);
+            card.appendChild(linha);
 
-            const bodyCard = document.createElement('div');
-            bodyCard.classList.add('body-card');
-            newCard.appendChild(bodyCard);
+            const informacoes = document.createElement('div');
+            informacoes.classList.add('d-flex', 'flex-row', 'justify-content-evenly');
+            card.appendChild(informacoes);
 
-            const date = document.createElement("p");
-            date.textContent = `Ano: ${this.obterAno(filme)} `;
-            date.classList.add('date');
-            bodyCard.appendChild(date);
+            const data = document.createElement("span");
+            data.textContent = `Ano: ${this.obterAno(midia)} `;
+            data.classList.add('text-secondary', 'fs-5', 'fw-light');
+            informacoes.appendChild(data);
 
-            const ranking = document.createElement("p");
-            ranking.textContent = `Avaliação: ${this.obterAvaliacao(filme)} `;
-            ranking.classList.add('ranking');
-            bodyCard.appendChild(ranking);
+            const avaliacao = document.createElement("span");
+            avaliacao.textContent = `Avaliação: ${this.obterAvaliacao(midia)} `;
+            avaliacao.classList.add('fs-5', 'fst-italic');
+            informacoes.appendChild(avaliacao);
 
-            grid.appendChild(newCard);
+            this.divConteudo.appendChild(card);
 
-            newCard.addEventListener('click', (event: Event) => this.obterDetalhes(event));
+            card.addEventListener('click', (event: Event) => this.obterDetalhes(event));
 
         }
     }
 
-    private obterAno(filme: IModelBase): string {
-        const data = filme.data;
+    private obterAno(midia: IMidia): string {
+        const data = midia.data;
         return data.substring(0, 4);
     }
 
-    private obterAvaliacao(filme: IModelBase): string {
-        const avaliacao = filme.avaliacao;
+    private obterAvaliacao(midia: IMidia): string {
+        const avaliacao = Math.round(midia.avaliacao);
         return `${avaliacao}/10`
     }
 

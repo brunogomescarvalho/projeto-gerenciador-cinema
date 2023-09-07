@@ -1,8 +1,8 @@
-import { TipoBusca } from "../../models/enum-model";
-import { ServicoFilme } from "../../services/service-filmes";
-import { TelaBase } from "../compartilhado/tela-base";
 import 'bootstrap'
 import './tela-filmes.css'
+import { ServicoFilme } from "../../services/service-filmes";
+import { TelaBase } from "../compartilhado/tela-base";
+import { IMidia } from '../../models/midia';
 
 export class TelaFilmes extends TelaBase {
 
@@ -30,7 +30,14 @@ export class TelaFilmes extends TelaBase {
 
         try {
 
-            const listaFilmes = await this.service.obterPorParametro(params);
+            let listaFilmes: IMidia[] = [];
+
+            if (tipo == params) {
+                listaFilmes = await this.service.obterFilmesPorGeneros(params);
+            }
+            else {
+                listaFilmes = await this.service.obterFilmesPorCategoria(params)
+            }
 
             this.gerarCards(listaFilmes, tipo)
 
@@ -48,8 +55,11 @@ export class TelaFilmes extends TelaBase {
             case 'movie/popular':
                 return 'Populares'
 
-            default:
+            case 'movie/now_playing':
                 return 'Lançamentos'
+
+            default:
+                return params
         }
     }
 }

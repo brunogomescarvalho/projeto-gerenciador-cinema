@@ -1,31 +1,43 @@
-import { IModelBase } from "../models/base";
-import { ServicoBase } from "./service";
+import { IMidia, IMidiaDetalhes } from "../models/midia";
+import { ServicoBase } from "./service-base";
 
 export class ServicoSeries extends ServicoBase {
 
-
-    public async obterPorParametro(params: string): Promise<IModelBase[]> {
-        return await this.obterListagem(params);
+    public async obterPorParametro(params: string): Promise<IMidia[]> {
+        return await this.obterListagemPorCategoria(params);
     }
 
-    protected mapearObjeto(obj: any): IModelBase {
+    protected mapearMidia(obj: any): IMidia {
 
         const serie = {
             id: obj.id,
             avaliacao: obj.vote_average,
-            imagemAlt: obj.backdrop_path,
-            data: obj.first_air_date,
-            generos: obj.genres ? obj.genres : obj.genre_ids,
             imagem: obj.poster_path,
+            data: obj.first_air_date,
             nome: obj.name,
             resumo: obj.overview,
-            videos: obj.videos,
-            criador: obj.created_by,
             tipo: 'tv'
-
         }
 
-        return serie as IModelBase;
+        return serie as IMidia;
+    }
+
+    protected mapearBuscaPorId_DetalhesMidia(obj: any): IMidiaDetalhes {
+        const serie: IMidiaDetalhes = {
+            id: obj.id,
+            videos: obj.videos.results,
+            generos: obj.genres,
+            imagens: obj.images.backdrops,
+            creditos: obj.credits,
+            avaliacao: obj.vote_average,
+            imagem: obj.poster_path,
+            data: obj.first_air_date,
+            nome: obj.name,
+            resumo: obj.overview,
+            tipo: 'tv'
+        }
+
+        return serie;
     }
 
 

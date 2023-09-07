@@ -27,9 +27,10 @@ export class ServicoFavoritos {
     private atualizarDados(objDados: any[], dados: string, obj: any) {
         objDados = JSON.parse(dados) as any[];
 
-        let existe = objDados.find(x => x.id == obj.id) as boolean;
-        if (existe)
-            objDados.splice(obj, 1);
+        let index = objDados.findIndex(x => x.id == obj.id)
+        if (index != -1) {
+            objDados.splice(index, 1)
+        }
         else {
             objDados.push(obj);
         }

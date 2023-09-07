@@ -4,15 +4,13 @@ import { TelaBase } from '../compartilhado/tela-base';
 import { ServicoFavoritos } from '../../services/service-favoritos';
 import { ServicoFilme } from '../../services/service-filmes';
 import { ServicoSeries } from '../../services/service-series';
-import { IModelBase } from '../../models/base';
+import { IMidia } from '../../models/midia';
 
 export class TelaFavoritos extends TelaBase {
 
     servicoFavoritos: ServicoFavoritos
     servicoFilmes: ServicoFilme
     servicoSeries: ServicoSeries
-    filmesFavoritos: IModelBase[] = [];
-    seriesFavoritas: IModelBase[] = [];
 
     constructor() {
         super()
@@ -28,7 +26,6 @@ export class TelaFavoritos extends TelaBase {
         if (dados) {
             this.obterListagem(dados)
         }
-
     }
 
 
@@ -47,8 +44,7 @@ export class TelaFavoritos extends TelaBase {
     }
 
     private async obterListagem(dados: any) {
-
-        const favoritos = { series: [] as IModelBase[], filmes: [] as IModelBase[] }
+        const favoritos = { series: [] as IMidia[], filmes: [] as IMidia[] }
 
         for (let i of dados.series) {
             favoritos.series.push(await this.servicoSeries.obterPorId(`${i.tipo}/${i.id}`))
@@ -57,11 +53,13 @@ export class TelaFavoritos extends TelaBase {
         for (let i of dados.filmes) {
             favoritos.filmes.push(await this.servicoFilmes.obterPorId(`${i.tipo}/${i.id}`))
         }
+        let filmesESeries: IMidia[] = [];
 
-        if (dados.filmes.length > 0)
-            this.gerarCards(favoritos.filmes, 'Filmes');
-        if (dados.series.length > 0)
-            this.gerarCards(favoritos.series, 'Séries');
+        filmesESeries = favoritos.filmes.concat(favoritos.series);
+
+        this.gerarCards(filmesESeries, 'Filmes e Séries');
+
+
     }
 }
 

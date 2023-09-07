@@ -1,20 +1,20 @@
-import { ServicoBase } from "../../services/service";
-import { ServicoFilme } from "../../services/service-filmes";
-import { IModelBase } from "../../models/base";
-import { ServicoSeries } from "../../services/service-series";
 import 'bootstrap'
 import './detalhes.css'
+import { ServicoBase } from "../../services/service-base";
+import { ServicoFilme } from "../../services/service-filmes";
+import { IMidia, IMidiaDetalhes } from "../../models/midia";
+import { ServicoSeries } from "../../services/service-series";
 import { ServicoFavoritos } from "../../services/service-favoritos";
 
 export class Detalhes {
 
-    private service: ServicoBase;
+    private servico: ServicoBase;
 
     private serviceFavoritos: ServicoFavoritos;
 
-    private tipoModel: string;
+    private tipoMidia: string;
 
-    private idModel: string;
+    private idMidia: string;
 
 
 
@@ -26,13 +26,13 @@ export class Detalhes {
 
         const url = new URLSearchParams(window.location.search);
 
-        this.tipoModel = url.get('tag') as string;
+        this.tipoMidia = url.get('tag') as string;
 
-        this.service = this.obterServico(this.tipoModel);
+        this.idMidia = url.get('id') as string
 
-        this.idModel = url.get('id') as string
+        this.servico = this.obterServico(this.tipoMidia);
 
-        const endpoint = `${this.tipoModel}/${this.idModel}`;
+        const endpoint = `${this.tipoMidia}/${this.idMidia}`;
 
         this.obterDetalhes(endpoint);
 
@@ -52,50 +52,77 @@ export class Detalhes {
 
     private async obterDetalhes(endpoint: string): Promise<void> {
         try {
-            const model = await this.service.obterPorId(endpoint);
+            const midia = await this.servico.obterPorId(endpoint);
 
-            await this.renderizar(model);
+            await this.renderizar(midia);
         }
         catch (error) {
             console.log(error);
         }
     }
-    private async renderizar(model: IModelBase): Promise<void> {
+    private async renderizar(midia: IMidiaDetalhes): Promise<void> {
         const icone = document.getElementById('icone') as HTMLElement;
         const titulo = document.getElementById('titulo') as HTMLElement;
         const descricao = document.getElementById('resumo') as HTMLElement;
         const img01 = document.getElementById('img01') as HTMLImageElement;
 
-        titulo.innerText = model.nome;
-        descricao.innerText = model.resumo;
+        titulo.innerText = midia.nome;
 
-        img01.src = `https://image.tmdb.org/t/p/w500${model.imagem}`;
+        descricao.innerText = midia.resumo;
 
-        this.gerarQuadrosVideos(model);
+        img01.src = `https://image.tmdb.org/t/p/w500${midia.imagem}`;
 
-        this.gerarGeneros(model);
+        this.gerarGeneros(midia);
 
-        this.atribuirValorIcone(icone, model);
+        this.atribuirValorIcone(icone, midia);
+
+        if (midia.videos.length > 0)
+            this.gerarQuadrosVideos(midia)
+        else
+            this.gerarQuadroImagens(midia)
 
     }
 
 
-    private async gerarQuadrosVideos(model: IModelBase) {
+    private async gerarQuadrosVideos(midia: IMidiaDetalhes) {
+        const link = 'https://www.youtube.com/embed/'
 
-        const videos = model.videos.results as any[];
+        const videos = midia.videos as any[];
 
+        await this.gerarQuadroSlides(videos, link);
+    }
+
+    private gerarQuadroImagens(midia: IMidiaDetalhes) {
+        const link = `https://image.tmdb.org/t/p/w500`;
+
+        const imagens = midia.imagens.slice(0, 3);
+
+        const imgs: any[] = [];
+
+        imagens.forEach(x => {
+
+            const obj = { key: x.file_path }
+
+            imgs.push(obj)
+        })
+
+        this.gerarQuadroSlides(imgs, link);
+    }
+
+
+    private async gerarQuadroSlides(promocional: any[], link: string) {
         const carouselInner = document.querySelector('.carousel-inner')!;
 
-        for await (const video of videos) {
+        for await (const item of promocional) {
             const slide = document.createElement('div');
             slide.classList.add('carousel-item');
 
             const iframe = document.createElement('iframe');
-            iframe.src = `https://www.youtube.com/embed/${video.key}`;
+            iframe.src = `${link}${item.key}`;
             iframe.allowFullscreen = true;
             iframe.classList.add('videos');
 
-            if (video === videos[0]) {
+            if (item === promocional[0]) {
                 slide.classList.add('active');
             }
             carouselInner.appendChild(slide);
@@ -103,21 +130,31 @@ export class Detalhes {
         }
     }
 
-    private gerarGeneros(model: IModelBase) {
+
+    private gerarGeneros(midia: IMidiaDetalhes) {
         const generos = document.getElementById('generos') as HTMLDivElement;
 
-        model.generos.map(x => {
+        midia.generos.map(x => {
             let btn = document.createElement('button') as HTMLButtonElement;
             btn.innerText = x.name;
             btn.id = x.id;
-            btn.classList.add('btn', 'btn-outline-secondary', 'btn-sm', 'm-2')
+            btn.classList.add('btn', 'btn-outline-secondary', 'btn-sm', 'm-2');
+            btn.addEventListener('click', (event: Event) => this.buscarPorGeneros(event))
 
             generos.appendChild(btn);
         })
     }
+    private buscarPorGeneros(event: Event): any {
+        const button = event.target as HTMLButtonElement;
+
+        let url = this.tipoMidia == 'tv' ? 'tela-series.html' : 'tela-filmes.html'
+
+        window.location.href = `${url}?tag=${button.innerText}&type=${this.tipoMidia}`;
+    }
 
     private alterarIconeCoracao() {
         const icone = document.getElementById('icone') as HTMLElement;
+
         if (icone.classList.contains('bi-balloon-heart-fill'))
             icone.classList.replace('bi-balloon-heart-fill', 'bi-balloon-heart')
         else {
@@ -125,51 +162,29 @@ export class Detalhes {
         }
     }
 
-    private atribuirValorIcone(icone: HTMLElement, model: IModelBase) {
+    private atribuirValorIcone(icone: HTMLElement, midia: IMidiaDetalhes) {
 
-        let obj = {
-            id: model.id,
-            tipo: model.tipo
-        }
+        let midiaSelecionanda = { id: midia.id, tipo: midia.tipo }
 
-        let favorito = this.serviceFavoritos.existe(obj);
+        let ehFavorito = this.serviceFavoritos.existe(midiaSelecionanda);
 
-        if (favorito)
-            icone.classList.replace('bi-balloon-heart', 'bi-balloon-heart-fill')
-        else{
-            icone.classList.replace('bi-balloon-heart-fill', 'bi-balloon-heart')
+        if (ehFavorito)
+            icone.classList.replace('bi-balloon-heart', 'bi-balloon-heart-fill');
+        else {
+            icone.classList.replace('bi-balloon-heart-fill', 'bi-balloon-heart');
         }
     }
 
     public favoritar() {
 
-        let favorito = {
-            id: this.idModel,
-            tipo: this.tipoModel
-        }
+        let favorito = { id: this.idMidia, tipo: this.tipoMidia }
 
         this.serviceFavoritos.favoritar(favorito);
-        this.alterarIconeCoracao()
+
+        this.alterarIconeCoracao();
     }
 
-
-
-
-
-    private gerarCoverImagem(model: IModelBase) {
-        const carouselInner = document.querySelector('.carousel-inner')!;
-        const slide = document.createElement('div');
-        slide.classList.add('carousel-item');
-        slide.classList.add('active');
-        const img = document.createElement('img');
-        img.classList.add('videos')
-        img.src = `https://image.tmdb.org/t/p/w500${model.imagemAlt}`;
-        carouselInner.appendChild(slide);
-        slide.appendChild(img);
-    }
-
-
-    private gerarElenco(filme: IModelBase) {
+    private gerarElenco(filme: IMidia) {
         const elenco = document.getElementById('elenco') as HTMLUListElement;
 
         // filme.credits.cast.map((x: any) => {

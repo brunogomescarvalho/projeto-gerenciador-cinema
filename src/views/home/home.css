@@ -1,5 +1,10 @@
  @import url('../../../node_modules/bootstrap/dist/css/bootstrap.min.css');
-/*
+
+ body {
+     background-color: rgb(251, 251, 255);
+ }
+
+ /*
 body {
     background-color: rgb(251, 251, 255);
 }

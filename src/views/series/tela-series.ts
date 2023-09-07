@@ -2,7 +2,7 @@ import 'bootstrap'
 import './tela-series.css'
 import { TelaBase } from '../compartilhado/tela-base';
 import { ServicoSeries } from '../../services/service-series';
-import { TipoBusca } from '../../models/enum-model';
+
 
 export class TelaSeries extends TelaBase {
 
@@ -25,7 +25,7 @@ export class TelaSeries extends TelaBase {
     }
 
     private async obterListas(params: string): Promise<void> {
-        let tipo: string = this.obterTipoBuscar(params);
+        let tipo: string = this.obterTipoMidia(params);
 
         try {
             const listaSeries = await this.service.obterPorParametro(params);
@@ -37,7 +37,7 @@ export class TelaSeries extends TelaBase {
         }
     }
 
-    private obterTipoBuscar(params: string): string {
+    private obterTipoMidia(params: string): string {
         switch (params) {
             case 'tv/top_rated':
                 return 'Melhores Avaliados'
