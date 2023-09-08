@@ -19,9 +19,7 @@ export abstract class ServicoBase {
                 'Authorization': `Bearer ${apiKey}`,
                 'accept': 'application/json',
             },
-
         });
-
     }
 
     public async obterPorId(endpoint: string): Promise<IMidiaDetalhes> {

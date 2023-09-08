@@ -26,22 +26,20 @@ export class ServicoPessoas {
 
             return this.mapearPessoa(objeto);
         }
-        throw new Error("Ocorreu um erro ao efetuar sua solicitação" + `Erro:${resposta.status}`);
+        throw new Error("Ocorreu um erro ao efetuar sua solicitação" + `Erro: ${resposta.status}`);
     }
 
     private mapearPessoa(obj: any) {
         return {
+            id: obj.id,
+            nome: obj.name,
             localNascimento: obj.place_of_birth,
+            dataNascimento: obj.birthday,
             imagem: obj.profile_path,
             imagensProfiles: obj.images.profiles,
             obras: obj.credits,
             biografia: obj.biography,
-            dataNascimento: obj.birthday,
-            dataFalecimento: obj.deathday,
-            id: obj.id,
-            nome: obj.name,
+
         } as IPessoa;
     }
-
-
 }
