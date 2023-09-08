@@ -32,7 +32,7 @@ export abstract class TelaBase {
 
             const titulo = document.createElement("span");
             titulo.textContent = `${midia.nome}`;
-            titulo.classList.add('col', 'text-center', 'p-2', 'fs-5');
+            titulo.classList.add('col', 'text-center', 'p-2', 'fs-6');
             card.appendChild(titulo)
 
             const linha = document.createElement("hr");
@@ -49,7 +49,7 @@ export abstract class TelaBase {
 
             const avaliacao = document.createElement("span");
             avaliacao.textContent = `Avaliação: ${this.obterAvaliacao(midia)} `;
-            avaliacao.classList.add('fs-5', 'fst-italic');
+            avaliacao.classList.add('fs-6', 'fst-italic');
             informacoes.appendChild(avaliacao);
 
             this.divConteudo.appendChild(card);

@@ -11,7 +11,7 @@ export interface IMidia {
 export interface IMidiaDetalhes extends IMidia {
     imagens: any[],
     videos: any,
-    creditos: any[],
+    creditos: any,
     votos: number
     generos: any[],
 }

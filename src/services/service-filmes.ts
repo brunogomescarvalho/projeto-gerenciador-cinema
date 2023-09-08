@@ -8,12 +8,10 @@ export class ServicoFilme extends ServicoBase {
     }
 
     public async obterFilmesPorCategoria(params: string): Promise<IMidia[]> {
-
         return await this.obterListagemPorCategoria(params);
     }
 
     public async obterFilmesPorGeneros(id: string): Promise<IMidia[]> {
-
         return await this.obterListagemPorGenero(id);
     }
 
@@ -35,7 +33,7 @@ export class ServicoFilme extends ServicoBase {
             videos: obj.videos.results,
             generos: obj.genres,
             imagens: obj.images.backdrops,
-            creditos: obj.credits.cast,
+            creditos: obj.credits,
             avaliacao: obj.vote_average,
             imagem: obj.poster_path,
             data: obj.release_date,
@@ -44,6 +42,5 @@ export class ServicoFilme extends ServicoBase {
             votos: obj.vote_count,
             tipo: 'movie'
         } as IMidiaDetalhes
-
     }
 }

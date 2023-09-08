@@ -39,36 +39,9 @@ export class TelaPessoas extends TelaBase {
 
         this.gerarDadosPessoais(pessoa);
 
-        this.gerarCarousel(pessoa);
-
         this.gerarCardsFilmes(pessoa);
 
     }
-
-    private gerarCarousel(pessoa: IPessoa) {
-        // const carousel = document.querySelector('.carousel-inner') as HTMLDivElement;
-
-        // const imgs = pessoa.imagensProfiles as any[];
-
-        // for (const item of imgs) {
-        //     if (item === imgs[1]) {
-        //         const slide = document.createElement('div');
-        //         slide.classList.add('carousel-item');
-
-        //         const img = document.createElement('img');
-        //         img.src = `https://image.tmdb.org/t/p/w500${item.file_path}`;
-
-        //         img.classList.add('img-fluid');
-
-        //         if (item === imgs[1]) {
-        //             slide.classList.add('active');
-        //         }
-        //         carousel.appendChild(slide);
-        //         slide.appendChild(img);
-        //     }
-        // }
-    }
-
 
 
     private gerarCardsFilmes(pessoa: IPessoa) {
@@ -101,7 +74,9 @@ export class TelaPessoas extends TelaBase {
 
         biografia.innerText = `${pessoa.biografia}`;
 
-        img.src = `https://image.tmdb.org/t/p/w500${pessoa.imagem}`;
+        let imagem = pessoa.imagem ? pessoa.imagem : pessoa.obras.cast[0].backdrop_path;
+
+        img.src = `https://image.tmdb.org/t/p/w500${imagem}`;
     }
 
     private mapearMidias(obra: any): IMidia {

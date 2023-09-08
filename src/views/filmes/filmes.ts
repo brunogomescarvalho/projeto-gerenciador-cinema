@@ -26,8 +26,6 @@ export class TelaFilmes extends TelaBase {
 
         this.obterListas(params);
 
-
-
     }
 
     private async obterListas(params: any): Promise<void> {

@@ -38,6 +38,16 @@ export class Detalhes {
 
     }
 
+
+    public favoritar(): void {
+
+        let favorito = { id: this.idMidia, tipo: this.tipoMidia }
+
+        this.serviceFavoritos.favoritar(favorito);
+
+        this.alterarIconeCoracao();
+    }
+
     private obterServico(tipo: string): ServicoBase {
         switch (tipo) {
             case 'movie':
@@ -65,6 +75,7 @@ export class Detalhes {
         const titulo = document.getElementById('titulo') as HTMLElement;
         const descricao = document.getElementById('resumo') as HTMLElement;
         const img01 = document.getElementById('img01') as HTMLImageElement;
+
 
 
         titulo.innerText = midia.nome;
@@ -115,6 +126,15 @@ export class Detalhes {
     }
 
     private gerarInfos(midia: IMidiaDetalhes) {
+
+        const txtDiretor = document.getElementById('diretor') as HTMLSpanElement;
+
+        if (midia.creditos.crew.length > 0) {
+            const diretor = midia.creditos.crew.find((x: any) => x.department == "Directing");
+
+            txtDiretor.textContent = `Dirigido por: ${diretor.name}`;
+        }
+
         const infos = document.getElementById('infos') as HTMLElement;
 
         let data = document.createElement('p') as HTMLElement;
@@ -178,7 +198,7 @@ export class Detalhes {
     }
 
     private construirUrl(button: HTMLButtonElement) {
-       
+
         const endereco = {
             url: 'filmes.html',
             id: button.id,
@@ -209,19 +229,11 @@ export class Detalhes {
         }
     }
 
-    public favoritar() {
-
-        let favorito = { id: this.idMidia, tipo: this.tipoMidia }
-
-        this.serviceFavoritos.favoritar(favorito);
-
-        this.alterarIconeCoracao();
-    }
 
     private gerarElenco(filme: IMidiaDetalhes) {
         const divElenco = document.getElementById('elenco') as HTMLUListElement;
         divElenco.classList.add('d-flex', 'flex-row', 'justify-content-between', 'mb-2')
-        const elenco = filme.creditos.slice(0, 5)
+        const elenco = filme.creditos.cast.slice(0, 5)
 
         elenco.forEach((x: any) => {
             let link = document.createElement('a') as HTMLAnchorElement;
@@ -234,7 +246,7 @@ export class Detalhes {
                 'link-underline',
                 'link-underline-opacity-0',
                 'link-underline-opacity-75-hover');
-                
+
             link.href = `pessoa.html?id=${x.id}`;
             link.innerText = x.name;
 

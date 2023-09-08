@@ -51,7 +51,7 @@ export abstract class ServicoBase {
 
     protected async obterListagemPorGenero(id: string) {
 
-        const resposta = await this.fetchTMDB(`genre/${id}/movies`, `?language=pt-br`);
+        const resposta = await this.fetchTMDB(`genre/${id}/movies`);
 
         if (resposta.ok) {
             const listaMidias = await resposta.json() as any;

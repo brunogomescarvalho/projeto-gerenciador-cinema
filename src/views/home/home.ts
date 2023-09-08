@@ -37,8 +37,6 @@ class TelaHome {
         return `${endereco.url}?tag=search/multi&query=${endereco.query}`
     }
 
-
-
 }
 
 window.addEventListener('load', () => new TelaHome())
