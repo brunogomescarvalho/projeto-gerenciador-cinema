@@ -24,6 +24,18 @@ export abstract class ServicoBase {
 
     }
 
+    public async obterPorId(endpoint: string): Promise<IMidiaDetalhes> {
+
+        const resposta = await this.fetchTMDB(`${endpoint}`, '?append_to_response=images,videos,credits&language=pt-BR&include_image_language=en,null');
+
+        if (resposta.ok) {
+            const obj = await resposta.json();
+
+            return this.mapearBuscaPorId_DetalhesMidia(obj);
+        }
+        throw new Error("Ocorreu um erro ao efetuar sua solicitação" + `Erro:${resposta.status}`);
+    }
+
     protected async obterListagemPorCategoria(endpoint: string): Promise<IMidia[]> {
 
         const resposta = await this.fetchTMDB(endpoint);
@@ -33,47 +45,42 @@ export abstract class ServicoBase {
 
             return this.mapearListaMidias(obj);
         }
-        else {
-            throw new Error("Ocorreu um erro ao efetuar sua solicitação" + `Erro:${resposta.status}`);
-        }
+        throw new Error("Ocorreu um erro ao efetuar sua solicitação" + `Erro:${resposta.status}`);
+
     }
 
-    public async obterPorId(endpoint: string): Promise<IMidiaDetalhes> {
+    protected async obterListagemPorGenero(id: string) {
 
-        const resposta = await this.fetchTMDB(`${endpoint}`, '?append_to_response=images,videos,credits&language=pt-BR&include_image_language=en,null');
-
-        if (resposta.ok) {
-            const obj = await resposta.json();
-
-            console.log(obj)
-
-            return this.mapearBuscaPorId_DetalhesMidia(obj);
-        }
-        else {
-            throw new Error("Ocorreu um erro ao efetuar sua solicitação" + `Erro:${resposta.status}`);
-        }
-    }
-
-    protected async obterListagemPorGenero(parametro: string, tipoMidia: string) {
-        let endpoint = `search/multi`;
-        let append = `?query=${parametro}&language=pt-br`;
-
-        const resposta = await this.fetchTMDB(endpoint, append);
+        const resposta = await this.fetchTMDB(`genre/${id}/movies`, `?language=pt-br`);
 
         if (resposta.ok) {
-            const obj = await resposta.json() as any;
-
-            console.log(obj);
-            const listaMidias = { results: obj.results.filter((x: any) => x.media_type == tipoMidia) }
+            const listaMidias = await resposta.json() as any;
 
             return this.mapearListaMidias(listaMidias);
         }
-        else {
-            throw new Error("Ocorreu um erro ao efetuar sua solicitação" + `Erro:${resposta.status}`);
-        }
-
+        throw new Error("Ocorreu um erro ao efetuar sua solicitação" + `Erro:${resposta.status}`);
 
     }
+
+    protected async obterListagemPorInput(input: string, tipoMidia: string) {
+
+        const resposta = await this.fetchTMDB(`search/multi?query=${input}`, `&language=pt-br&include_media_type=true`);
+
+        if (resposta.ok) {
+            const listaMidias = await resposta.json();
+
+            const midiasSelecionadas: any[] = listaMidias.results;
+
+            const listaFiltrada = midiasSelecionadas.filter((x: any) => x.media_type == tipoMidia);
+
+            const obj = { results: listaFiltrada }
+
+            return this.mapearListaMidias(obj);
+        }
+        throw new Error("Ocorreu um erro ao efetuar sua solicitação" + `Erro:${resposta.status}`);
+
+    }
+
 
     protected mapearListaMidias(obj: any): IMidia[] {
         const midias: IMidia[] = []

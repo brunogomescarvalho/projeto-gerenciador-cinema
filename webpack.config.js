@@ -8,11 +8,13 @@ module.exports = {
   // O ponto de entrada da aplicação
   entry: {
     index: path.resolve(__dirname, 'src/views', 'home', 'home.ts'),
-    detalhes: path.resolve(__dirname, 'src/views', 'detalhes', 'detalhes.ts'),
-    telaBase: path.resolve(__dirname, 'src/views', 'compartilhado', 'tela-base.ts'),
-    telaFilmes: path.resolve(__dirname, 'src/views', 'filmes', 'tela-filmes.ts'),
-    telaSeries: path.resolve(__dirname, 'src/views', 'series', 'tela-series.ts'),
-    telaFavoritos: path.resolve(__dirname, 'src/views', 'favoritos', 'tela-favoritos.ts'),
+    telaDetalhes: path.resolve(__dirname, 'src/views', 'detalhes', 'detalhes.ts'),
+    telaBase: path.resolve(__dirname, 'src/views', 'compartilhado', 'base.ts'),
+    telaFilmes: path.resolve(__dirname, 'src/views', 'filmes', 'filmes.ts'),
+    telaSeries: path.resolve(__dirname, 'src/views', 'series', 'series.ts'),
+    telaFavoritos: path.resolve(__dirname, 'src/views', 'favoritos', 'favoritos.ts'),
+    telaPessoa: path.resolve(__dirname, 'src/views', 'pessoas', 'pessoa.ts'),
+
   },
 
   // Configuração de output do build
@@ -56,24 +58,30 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: 'detalhes.html',
       template: path.resolve(__dirname, 'src/views', 'detalhes', 'detalhes.html'),
-      chunks: ['detalhes']
+      chunks: ['telaDetalhes']
     }),
 
     new HtmlWebpackPlugin({
-      filename: 'tela-filmes.html',
-      template: path.resolve(__dirname, 'src/views', 'filmes', 'tela-filmes.html'),
+      filename: 'filmes.html',
+      template: path.resolve(__dirname, 'src/views', 'filmes', 'filmes.html'),
       chunks: ['telaFilmes'],
     }),
 
     new HtmlWebpackPlugin({
-      filename: 'tela-series.html',
-      template: path.resolve(__dirname, 'src/views', 'series', 'tela-series.html'),
+      filename: 'series.html',
+      template: path.resolve(__dirname, 'src/views', 'series', 'series.html'),
       chunks: ['telaSeries']
     }),
     new HtmlWebpackPlugin({
-      filename: 'tela-favoritos.html',
-      template: path.resolve(__dirname, 'src/views', 'favoritos', 'tela-favoritos.html'),
+      filename: 'favoritos.html',
+      template: path.resolve(__dirname, 'src/views', 'favoritos', 'favoritos.html'),
       chunks: ['telaFavoritos']
+    }),
+
+    new HtmlWebpackPlugin({
+      filename: 'pessoa.html',
+      template: path.resolve(__dirname, 'src/views', 'pessoas', 'pessoa.html'),
+      chunks: ['telaPessoa']
     }),
 
     new CopyWebpackPlugin({

@@ -37,13 +37,14 @@ export class ServicoFavoritos {
         return objDados;
     }
 
-    public existe(obj: any): boolean {
-        let dados = this.obterDados();
-        let listaFavoritos: any[] = []
-        if (dados)
-            listaFavoritos = JSON.parse(dados);
+    verificarFavorito(objeto: any): boolean {
+        const dados = this.obterDados();
 
-        return listaFavoritos.find(x => x.id == obj.id) as boolean;
+        let listaFavoritos = dados ? JSON.parse(dados) : [];
+
+        console.log(listaFavoritos)
+
+        return listaFavoritos.find((x: any) => x.id == objeto.id) as boolean;
     }
 
     public listarFavoritos(): any {

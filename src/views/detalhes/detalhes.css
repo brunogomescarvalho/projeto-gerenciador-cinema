@@ -5,10 +5,13 @@
     border: solid 1px red;
 } */
 
-
 .icone {
     font-size: 2rem;
     color: cornflowerblue;
+}
+
+.text-justify {
+    text-align: justify
 }
 
 .icone:hover {

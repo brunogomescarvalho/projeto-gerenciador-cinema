@@ -6,11 +6,13 @@ export interface IMidia {
     imagem: string,
     avaliacao: number,
     resumo: string,
-}
 
+}
 export interface IMidiaDetalhes extends IMidia {
     imagens: any[],
-    videos:any,
+    videos: any,
+    creditos: any[],
+    votos: number
     generos: any[],
-    creditos: any[]
 }
+

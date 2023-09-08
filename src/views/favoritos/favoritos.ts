@@ -1,6 +1,6 @@
 import 'bootstrap'
-import './tela-favoritos.css'
-import { TelaBase } from '../compartilhado/tela-base';
+import './favoritos.css'
+import { TelaBase } from '../compartilhado/base';
 import { ServicoFavoritos } from '../../services/service-favoritos';
 import { ServicoFilme } from '../../services/service-filmes';
 import { ServicoSeries } from '../../services/service-series';

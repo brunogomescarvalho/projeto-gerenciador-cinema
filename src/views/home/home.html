@@ -24,9 +24,9 @@
               Filmes
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="tela-filmes.html?tag=movie/popular">Populares</a></li>
-              <li><a class="dropdown-item" href="tela-filmes.html?tag=movie/top_rated">Melhores Avaliados</a></li>
-              <li><a class="dropdown-item" href="tela-filmes.html?tag=movie/now_playing">Lançamentos</a></li>
+              <li><a class="dropdown-item" href="filmes.html?tag=movie/popular">Populares</a></li>
+              <li><a class="dropdown-item" href="filmes.html?tag=movie/top_rated">Melhores Avaliados</a></li>
+              <li><a class="dropdown-item" href="filmes.html?tag=movie/now_playing">Lançamentos</a></li>
             </ul>
           </li>
           <li class="nav-item dropdown">
@@ -34,28 +34,37 @@
               Séries
             </a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="tela-series.html?tag=tv/popular">Populares</a></li>
-              <li><a class="dropdown-item" href="tela-series.html?tag=tv/top_rated">Melhores Avaliados</a></li>
-              <li><a class="dropdown-item" href="tela-series.html?tag=tv/on_the_air">No ar</a></li>
+              <li><a class="dropdown-item" href="series.html?tag=tv/popular">Populares</a></li>
+              <li><a class="dropdown-item" href="series.html?tag=tv/top_rated">Melhores Avaliados</a></li>
+              <li><a class="dropdown-item" href="series.html?tag=tv/on_the_air">No ar</a></li>
             </ul>
           </li>
           <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="tela-favoritos.html">Favoritos</a>
-        </li>
+            <a class="nav-link" aria-current="page" href="favoritos.html">Favoritos</a>
+          </li>
         </ul>
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">Search</button>
-        </form>
       </div>
     </div>
   </nav>
 
-  <h1 class="text-center fs-4 mb-3 text-uppercase">Gerenciador de Filmes e Séries OnLine</h1>
-  <hr>
-  <!-- <div id="conteudo"></div> -->
-  </div>
 
+  <div class="container-fluid m-0">
+    <div class="row">
+      <div class="col">
+        <h1 class="text-center fs-4 mb-3 text-uppercase">Gerenciador de Filmes e Séries OnLine</h1>
+        <hr>
+      </div>
+    </div>
+    <div class="row d-flex justify-content-center">
+      <div class="col-4">
+        <form role="search" class="d-flex m-2">
+          <input id="input" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          <button id="btnFilmes" name='movies' class="btn btn-outline-success ps-2">Filmes</button>
+          <button id="btnSeries" name='tv' class="btn btn-outline-success">Séries</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

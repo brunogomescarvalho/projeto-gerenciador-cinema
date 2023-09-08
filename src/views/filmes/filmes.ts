@@ -1,7 +1,7 @@
 import 'bootstrap'
-import './tela-filmes.css'
+import './filmes.css'
 import { ServicoFilme } from "../../services/service-filmes";
-import { TelaBase } from "../compartilhado/tela-base";
+import { TelaBase } from "../compartilhado/base";
 import { IMidia } from '../../models/midia';
 
 export class TelaFilmes extends TelaBase {
@@ -18,28 +18,37 @@ export class TelaFilmes extends TelaBase {
 
         const url = new URLSearchParams(window.location.search);
 
-        const params = url.get('tag') as string;
+        const query = url.get('query') as string;
+
+        const tag = url.get('tag') as string;
+
+        const params = { query: query, tag: tag }
 
         this.obterListas(params);
 
+
+
     }
 
-    private async obterListas(params: string): Promise<void> {
+    private async obterListas(params: any): Promise<void> {
 
-        let tipo: string = this.obterTipoBusca(params);
+        let tipo: string = this.obterTipoMidia(params.tag);
 
         try {
 
-            let listaFilmes: IMidia[] = [];
+            let listaSeries: IMidia[] = [];
 
-            if (tipo == params) {
-                listaFilmes = await this.service.obterFilmesPorGeneros(params);
+            if (tipo == 'Gênero') {
+                listaSeries = await this.service.obterFilmesPorGeneros(params.tag);
+            }
+            else if (params.query) {
+                listaSeries = await this.service.obterFilmesPorPesquisa(params.query.split("-").join(" "))
             }
             else {
-                listaFilmes = await this.service.obterFilmesPorCategoria(params)
+                listaSeries = await this.service.obterFilmesPorCategoria(params.tag)
             }
 
-            this.gerarCards(listaFilmes, tipo)
+            this.gerarCards(listaSeries, tipo)
 
         }
         catch (error) {
@@ -47,7 +56,7 @@ export class TelaFilmes extends TelaBase {
         }
     }
 
-    private obterTipoBusca(params: string): string {
+    private obterTipoMidia(params: string): string {
         switch (params) {
             case 'movie/top_rated':
                 return 'Melhores Avaliados'
@@ -58,8 +67,10 @@ export class TelaFilmes extends TelaBase {
             case 'movie/now_playing':
                 return 'Lançamentos'
 
-            default:
-                return params
+            case 'search/multi':
+                return 'Pesquisa'
+
+            default: return 'Gênero'
         }
     }
 }

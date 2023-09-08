@@ -66,6 +66,7 @@ export class Detalhes {
         const descricao = document.getElementById('resumo') as HTMLElement;
         const img01 = document.getElementById('img01') as HTMLImageElement;
 
+
         titulo.innerText = midia.nome;
 
         descricao.innerText = midia.resumo;
@@ -74,7 +75,11 @@ export class Detalhes {
 
         this.gerarGeneros(midia);
 
+        this.gerarInfos(midia);
+
         this.atribuirValorIcone(icone, midia);
+
+        this.gerarElenco(midia);
 
         if (midia.videos.length > 0)
             this.gerarQuadrosVideos(midia)
@@ -109,6 +114,28 @@ export class Detalhes {
         this.gerarQuadroSlides(imgs, link);
     }
 
+    private gerarInfos(midia: IMidiaDetalhes) {
+        const infos = document.getElementById('infos') as HTMLElement;
+
+        let data = document.createElement('p') as HTMLElement;
+        data.innerText = midia.data.substring(0, 4);
+
+        let avaliacao = document.createElement('p') as HTMLElement;
+        avaliacao.innerText = `Avaliação: ${Math.round(midia.avaliacao)}/10`;
+
+        let votos = document.createElement('p') as HTMLElement;
+        votos.innerText = `Votos: ${Math.round(midia.votos)}`;
+
+        infos.appendChild(data);
+        infos.appendChild(avaliacao);
+        infos.appendChild(votos);
+
+        for (let x of infos.children)
+            x.classList.add('fs-5', 'text-lowercase', 'p-1', 'text-center')
+
+
+    }
+
 
     private async gerarQuadroSlides(promocional: any[], link: string) {
         const carouselInner = document.querySelector('.carousel-inner')!;
@@ -138,7 +165,7 @@ export class Detalhes {
             let btn = document.createElement('button') as HTMLButtonElement;
             btn.innerText = x.name;
             btn.id = x.id;
-            btn.classList.add('btn', 'btn-outline-secondary', 'btn-sm', 'm-2');
+            btn.classList.add('btn', 'btn-outline-secondary', 'btn-sm', 'mt-1', 'mb-3', 'm-2');
             btn.addEventListener('click', (event: Event) => this.buscarPorGeneros(event))
 
             generos.appendChild(btn);
@@ -147,9 +174,16 @@ export class Detalhes {
     private buscarPorGeneros(event: Event): any {
         const button = event.target as HTMLButtonElement;
 
-        let url = this.tipoMidia == 'tv' ? 'tela-series.html' : 'tela-filmes.html'
+        window.location.href = this.construirUrl(button);
+    }
 
-        window.location.href = `${url}?tag=${button.innerText}&type=${this.tipoMidia}`;
+    private construirUrl(button: HTMLButtonElement) {
+       
+        const endereco = {
+            url: 'filmes.html',
+            id: button.id,
+        }
+        return `${endereco.url}?tag=${endereco.id}`
     }
 
     private alterarIconeCoracao() {
@@ -166,7 +200,7 @@ export class Detalhes {
 
         let midiaSelecionanda = { id: midia.id, tipo: midia.tipo }
 
-        let ehFavorito = this.serviceFavoritos.existe(midiaSelecionanda);
+        let ehFavorito = this.serviceFavoritos.verificarFavorito(midiaSelecionanda);
 
         if (ehFavorito)
             icone.classList.replace('bi-balloon-heart', 'bi-balloon-heart-fill');
@@ -184,16 +218,29 @@ export class Detalhes {
         this.alterarIconeCoracao();
     }
 
-    private gerarElenco(filme: IMidia) {
-        const elenco = document.getElementById('elenco') as HTMLUListElement;
+    private gerarElenco(filme: IMidiaDetalhes) {
+        const divElenco = document.getElementById('elenco') as HTMLUListElement;
+        divElenco.classList.add('d-flex', 'flex-row', 'justify-content-between', 'mb-2')
+        const elenco = filme.creditos.slice(0, 5)
 
-        // filme.credits.cast.map((x: any) => {
-        //     let li = document.createElement('li') as HTMLLIElement;
-        //     li.value = x.name;
-        //     li.id = x.id
+        elenco.forEach((x: any) => {
+            let link = document.createElement('a') as HTMLAnchorElement;
 
-        //     elenco.appendChild(li);
-        // })
+            link.classList.add(
+
+                'link-secondary',
+                'ink-offset-2',
+                'link-offset-3-hover',
+                'link-underline',
+                'link-underline-opacity-0',
+                'link-underline-opacity-75-hover');
+                
+            link.href = `pessoa.html?id=${x.id}`;
+            link.innerText = x.name;
+
+            divElenco.appendChild(link);
+
+        })
     }
 }
 

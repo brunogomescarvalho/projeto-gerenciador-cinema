@@ -1,5 +1,5 @@
 import 'bootstrap'
-import './tela-base.css'
+import './base.css'
 import { IMidia } from "../../models/midia";
 
 export abstract class TelaBase {
@@ -7,8 +7,6 @@ export abstract class TelaBase {
     protected divConteudo: HTMLDivElement;
 
     protected gerarCards(midias: IMidia[], tipoMidia: string): void {
-
-        console.log(midias)
 
         const subtitulo = document.createElement('h2');
         subtitulo.textContent = tipoMidia;
@@ -21,7 +19,9 @@ export abstract class TelaBase {
             if (midia.imagem == null) continue
 
             const card = document.createElement("div");
+            
             card.classList.add('col-xl-2', 'col-lg-4', 'col-md-6', 'col-sm-12', "card", 'p-2');
+
             card.id = midia.id.toString();
 
             card.setAttribute('tipo', midia.tipo);
