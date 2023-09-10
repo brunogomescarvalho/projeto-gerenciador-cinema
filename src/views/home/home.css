@@ -1,7 +1,31 @@
  @import url('../../../node_modules/bootstrap/dist/css/bootstrap.min.css');
 
+
  body {
-     background-color: rgb(251, 251, 255);
+    background-color: rgb(251, 251, 255);
      margin: 0;
      min-height: 100vh;
+ }
+
+ .aviso {
+     top: 0;
+     left: 0;
+     width: 100%;
+     height: 100%;
+     background-color: rgba(0, 0, 0, 0.579) !important;
+     z-index: 100;
+     display: flex;
+     position: absolute;
+     align-items: center;
+     justify-content: center;
+ }
+
+ .msgAviso {
+     text-align: center;
+     background-color: #ffffff;
+     border: 'none';
+     padding: 10px;
+     margin-bottom: 10px;
+     font-size: large;
+     border-radius: 5px;
  }

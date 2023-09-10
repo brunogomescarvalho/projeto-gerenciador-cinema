@@ -8,12 +8,10 @@ module.exports = {
   // O ponto de entrada da aplicação
   entry: {
     index: path.resolve(__dirname, 'src/views', 'home', 'home.ts'),
-    telaDetalhes: path.resolve(__dirname, 'src/views', 'detalhes', 'detalhes.ts'),
-    telaBase: path.resolve(__dirname, 'src/views', 'compartilhado', 'base.ts'),
-    telaFilmes: path.resolve(__dirname, 'src/views', 'filmes', 'filmes.ts'),
-    telaSeries: path.resolve(__dirname, 'src/views', 'series', 'series.ts'),
-    telaFavoritos: path.resolve(__dirname, 'src/views', 'favoritos', 'favoritos.ts'),
+    telaBase: path.resolve(__dirname, 'src/views', 'midia', 'base.ts'),
+    telaMidia: path.resolve(__dirname, 'src/views', 'midia', 'midia.ts'),
     telaPessoa: path.resolve(__dirname, 'src/views', 'pessoas', 'pessoa.ts'),
+    telaDetalhes: path.resolve(__dirname, 'src/views', 'detalhes', 'detalhes.ts'),
 
   },
 
@@ -62,21 +60,11 @@ module.exports = {
     }),
 
     new HtmlWebpackPlugin({
-      filename: 'filmes.html',
-      template: path.resolve(__dirname, 'src/views', 'filmes', 'filmes.html'),
-      chunks: ['telaFilmes'],
+      filename: 'midia.html',
+      template: path.resolve(__dirname, 'src/views', 'midia', 'midia.html'),
+      chunks: ['telaMidia'],
     }),
 
-    new HtmlWebpackPlugin({
-      filename: 'series.html',
-      template: path.resolve(__dirname, 'src/views', 'series', 'series.html'),
-      chunks: ['telaSeries']
-    }),
-    new HtmlWebpackPlugin({
-      filename: 'favoritos.html',
-      template: path.resolve(__dirname, 'src/views', 'favoritos', 'favoritos.html'),
-      chunks: ['telaFavoritos']
-    }),
 
     new HtmlWebpackPlugin({
       filename: 'pessoa.html',

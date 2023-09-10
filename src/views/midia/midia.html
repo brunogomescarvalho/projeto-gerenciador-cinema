@@ -4,9 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Séries</title>
+  <title>Filmes</title>
   <link rel="shortcut icon" href="/assets/favicon.svg" type="image/x-icon">
-
 </head>
 
 <body>
@@ -26,9 +25,9 @@
                 Filmes
               </a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="filmes.html?tag=movie/popular">Populares</a></li>
-                <li><a class="dropdown-item" href="filmes.html?tag=movie/top_rated">Melhores Avaliados</a></li>
-                <li><a class="dropdown-item" href="filmes.html?tag=movie/now_playing">Lançamentos</a></li>
+                <li><a class="dropdown-item" href="midia.html?tag=movie/popular">Populares</a></li>
+                <li><a class="dropdown-item" href="midia.html?tag=movie/top_rated">Melhores Avaliados</a></li>
+                <li><a class="dropdown-item" href="midia.html?tag=movie/now_playing">Lançamentos</a></li>
               </ul>
             </li>
             <li class="nav-item dropdown">
@@ -37,15 +36,19 @@
                 Séries
               </a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="series.html?tag=tv/popular">Populares</a></li>
-                <li><a class="dropdown-item" href="series.html?tag=tv/top_rated">Melhores Avaliados</a></li>
-                <li><a class="dropdown-item" href="series.html?tag=tv/on_the_air">No ar</a></li>
+                <li><a class="dropdown-item" href="midia.html?tag=tv/popular">Populares</a></li>
+                <li><a class="dropdown-item" href="midia.html?tag=tv/top_rated">Melhores Avaliados</a></li>
+                <li><a class="dropdown-item" href="midia.html?tag=tv/on_the_air">No ar</a></li>
               </ul>
             </li>
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="favoritos.html">Favoritos</a>
+              <a class="nav-link" aria-current="page" href="midia.html?tag=favoritos">Favoritos</a>
             </li>
           </ul>
+          <form class="d-flex" role="search">
+            <input id="input" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button id=btnPesquisar class="btn btn-outline-success">Pesquisar</button>
+          </form>
         </div>
       </div>
     </nav>

@@ -1,161 +1,144 @@
 import 'bootstrap'
 import './detalhes.css'
-import { ServicoBase } from "../../services/service-base";
-import { ServicoFilme } from "../../services/service-filmes";
-import { IMidia, IMidiaDetalhes } from "../../models/midia";
-import { ServicoSeries } from "../../services/service-series";
-import { ServicoFavoritos } from "../../services/service-favoritos";
+import { IMidiaDetalhes } from "../../models/midia";
+import { ServicoMidia } from '../../services/servico-midia';
+import { ServicoLocalStorage } from '../../services/servico-local-storage';
 
 export class Detalhes {
 
-    private servico: ServicoBase;
-
-    private serviceFavoritos: ServicoFavoritos;
-
+    private servico: ServicoMidia;
+    private servicoLocalStorage: ServicoLocalStorage;
     private tipoMidia: string;
-
     private idMidia: string;
+    private midia: IMidiaDetalhes
 
+    icone: HTMLElement;
+    titulo: HTMLElement;
+    descricao: HTMLElement;
+    img01: HTMLImageElement;
+    txtDiretor: HTMLSpanElement;
+    divElenco: HTMLUListElement;
+    infos: HTMLElement;
+    generos: HTMLDivElement;
+    input: HTMLInputElement;
+    btnPesquisar: HTMLButtonElement;
 
 
     constructor() {
 
-        this.serviceFavoritos = new ServicoFavoritos();
+        this.inicializarVariaveis();
 
-        document.getElementById('icone')!.addEventListener('click', () => this.favoritar())
+        this.incluirEventos();
 
+        const endpoint = this.obterEndpoint();
+
+        this.renderizarMidia(endpoint);
+    }
+
+
+    private obterEndpoint() {
         const url = new URLSearchParams(window.location.search);
-
         this.tipoMidia = url.get('tag') as string;
+        this.idMidia = url.get('id') as string;
+        return `${this.tipoMidia}/${this.idMidia}`;
+    }
 
-        this.idMidia = url.get('id') as string
+    private inicializarVariaveis() {
+        this.servico = new ServicoMidia();
+        this.servicoLocalStorage = new ServicoLocalStorage();
+        this.icone = document.getElementById('icone') as HTMLElement;
+        this.titulo = document.getElementById('titulo') as HTMLElement;
+        this.descricao = document.getElementById('resumo') as HTMLElement;
+        this.img01 = document.getElementById('img01') as HTMLImageElement;
+        this.txtDiretor = document.getElementById('diretor') as HTMLSpanElement;
+        this.divElenco = document.getElementById('elenco') as HTMLUListElement;
+        this.infos = document.getElementById('infos') as HTMLElement;
+        this.generos = document.getElementById('generos') as HTMLDivElement;
+        this.input = document.getElementById('input') as HTMLInputElement;
+        this.btnPesquisar = document.getElementById('btnPesquisar') as HTMLButtonElement;
 
-        this.servico = this.obterServico(this.tipoMidia);
+    }
 
-        const endpoint = `${this.tipoMidia}/${this.idMidia}`;
+    private incluirEventos() {
+        this.btnPesquisar.addEventListener('click', (event) => this.pesquisar(event));
+        this.icone.addEventListener('click', () => this.favoritar())
+    }
 
-        this.obterDetalhes(endpoint);
+    async renderizarMidia(endpoint: string) {
+
+        this.midia = await this.servico.obterMidiaPorId(endpoint);
+
+        await this.renderizar();
+
+    }
+
+    private async renderizar(): Promise<void> {
+        this.gerarBtnGeneros();
+        this.gerarInfos();
+        this.atribuirValorIcone();
+        this.gerarElenco();
+
+        if (this.midia.videos.length > 0)
+            await this.gerarQuadrosVideos()
+        else
+            await this.gerarQuadroImagens()
 
     }
 
 
     public favoritar(): void {
-
         let favorito = { id: this.idMidia, tipo: this.tipoMidia }
-
-        this.serviceFavoritos.favoritar(favorito);
-
+        this.servicoLocalStorage.favoritar(favorito);
         this.alterarIconeCoracao();
     }
 
-    private obterServico(tipo: string): ServicoBase {
-        switch (tipo) {
-            case 'movie':
-                return new ServicoFilme();
 
-            case 'tv':
-                return new ServicoSeries();
-
-            default: throw new Error('Serviço não disponível');
-        }
-    }
-
-    private async obterDetalhes(endpoint: string): Promise<void> {
-        try {
-            const midia = await this.servico.obterPorId(endpoint);
-
-            await this.renderizar(midia);
-        }
-        catch (error) {
-            console.log(error);
-        }
-    }
-    private async renderizar(midia: IMidiaDetalhes): Promise<void> {
-        const icone = document.getElementById('icone') as HTMLElement;
-        const titulo = document.getElementById('titulo') as HTMLElement;
-        const descricao = document.getElementById('resumo') as HTMLElement;
-        const img01 = document.getElementById('img01') as HTMLImageElement;
-
-
-
-        titulo.innerText = midia.nome;
-
-        descricao.innerText = midia.resumo;
-
-        img01.src = `https://image.tmdb.org/t/p/w500${midia.imagem}`;
-
-        this.gerarGeneros(midia);
-
-        this.gerarInfos(midia);
-
-        this.atribuirValorIcone(icone, midia);
-
-        this.gerarElenco(midia);
-
-        if (midia.videos.length > 0)
-            this.gerarQuadrosVideos(midia)
-        else
-            this.gerarQuadroImagens(midia)
-
-    }
-
-
-    private async gerarQuadrosVideos(midia: IMidiaDetalhes) {
+    private async gerarQuadrosVideos() {
         const link = 'https://www.youtube.com/embed/'
 
-        const videos = midia.videos as any[];
+        const videos = this.midia.videos as any[];
 
         await this.gerarQuadroSlides(videos, link);
     }
 
-    private gerarQuadroImagens(midia: IMidiaDetalhes) {
-        const link = `https://image.tmdb.org/t/p/w500`;
+    private async gerarQuadroImagens() {
+        const link = `https://image.tmdb.org/t/p/w780`;
 
-        const imagens = midia.imagens.slice(0, 3);
+        const imagens = this.midia.imagens.slice(0, 3);
 
-        const imgs: any[] = [];
+        const imgs = [...imagens].map((x) => ({ key: x.file_path }));
 
-        imagens.forEach(x => {
-
-            const obj = { key: x.file_path }
-
-            imgs.push(obj)
-        })
-
-        this.gerarQuadroSlides(imgs, link);
+        await this.gerarQuadroSlides(imgs, link);
     }
 
-    private gerarInfos(midia: IMidiaDetalhes) {
+    private gerarInfos() {
 
-        const txtDiretor = document.getElementById('diretor') as HTMLSpanElement;
+        this.titulo.innerText = this.midia.nome;
+        this.descricao.innerText = this.midia.resumo;
+        this.img01.src = `https://image.tmdb.org/t/p/w342${this.midia.imagem}`;
 
-        if (midia.creditos.crew.length > 0) {
-            const diretor = midia.creditos.crew.find((x: any) => x.department == "Directing");
+        if (this.midia.creditos.crew.length > 0) {
+            const diretor = this.midia.creditos.crew.find((x: any) => x.department == "Directing" || x.department == "Production");
 
-            txtDiretor.textContent = `Dirigido por: ${diretor.name}`;
+            this.txtDiretor.textContent = `${(diretor.department === "Directing" ? "Dirigido" : "Produzido")} por ${diretor.name}`;
         }
 
-        const infos = document.getElementById('infos') as HTMLElement;
-
         let data = document.createElement('p') as HTMLElement;
-        data.innerText = midia.data.substring(0, 4);
+        data.innerText = `ano: ${this.midia.data.substring(0, 4)}`;
+        this.infos.appendChild(data);
 
         let avaliacao = document.createElement('p') as HTMLElement;
-        avaliacao.innerText = `Avaliação: ${Math.round(midia.avaliacao)}/10`;
+        avaliacao.innerText = `Avaliação: ${Math.round(this.midia.avaliacao)}/10`;
+        this.infos.appendChild(avaliacao);
 
         let votos = document.createElement('p') as HTMLElement;
-        votos.innerText = `Votos: ${Math.round(midia.votos)}`;
+        votos.innerText = `Votos: ${Math.round(this.midia.votos)}`;
+        this.infos.appendChild(votos);
 
-        infos.appendChild(data);
-        infos.appendChild(avaliacao);
-        infos.appendChild(votos);
-
-        for (let x of infos.children)
-            x.classList.add('fs-5', 'text-lowercase', 'p-1', 'text-center')
-
+        for (let x of this.infos.children)
+            x.classList.add('fs-5', 'text-lowercase', 'p-1', 'text-center', 'd-flex', 'flex-column', 'm-0', 'align-self-center')
 
     }
-
 
     private async gerarQuadroSlides(promocional: any[], link: string) {
         const carouselInner = document.querySelector('.carousel-inner')!;
@@ -177,67 +160,50 @@ export class Detalhes {
         }
     }
 
-
-    private gerarGeneros(midia: IMidiaDetalhes) {
-        const generos = document.getElementById('generos') as HTMLDivElement;
-
-        midia.generos.map(x => {
+    private gerarBtnGeneros() {
+        this.midia.generos.map(x => {
             let btn = document.createElement('button') as HTMLButtonElement;
             btn.innerText = x.name;
             btn.id = x.id;
             btn.classList.add('btn', 'btn-outline-secondary', 'btn-sm', 'mt-1', 'mb-3', 'm-2');
             btn.addEventListener('click', (event: Event) => this.buscarPorGeneros(event))
-
-            generos.appendChild(btn);
+            this.generos.appendChild(btn);
         })
     }
+
     private buscarPorGeneros(event: Event): any {
         const button = event.target as HTMLButtonElement;
-
-        window.location.href = this.construirUrl(button);
-    }
-
-    private construirUrl(button: HTMLButtonElement) {
-
-        const endereco = {
-            url: 'filmes.html',
-            id: button.id,
-        }
-        return `${endereco.url}?tag=${endereco.id}`
+        window.location.href = `midia.html?tag=${button.id}`
     }
 
     private alterarIconeCoracao() {
-        const icone = document.getElementById('icone') as HTMLElement;
-
-        if (icone.classList.contains('bi-balloon-heart-fill'))
-            icone.classList.replace('bi-balloon-heart-fill', 'bi-balloon-heart')
+        if (this.icone.classList.contains('bi-balloon-heart-fill'))
+            this.icone.classList.replace('bi-balloon-heart-fill', 'bi-balloon-heart')
         else {
-            icone.classList.replace('bi-balloon-heart', 'bi-balloon-heart-fill')
+            this.icone.classList.replace('bi-balloon-heart', 'bi-balloon-heart-fill')
         }
     }
 
-    private atribuirValorIcone(icone: HTMLElement, midia: IMidiaDetalhes) {
+    private atribuirValorIcone(): void {
 
-        let midiaSelecionanda = { id: midia.id, tipo: midia.tipo }
+        let midiaSelecionanda = { id: this.midia.id, tipo: this.midia.tipo }
 
-        let ehFavorito = this.serviceFavoritos.verificarFavorito(midiaSelecionanda);
+        let ehFavorito = this.servicoLocalStorage.verificarFavorito(midiaSelecionanda);
 
         if (ehFavorito)
-            icone.classList.replace('bi-balloon-heart', 'bi-balloon-heart-fill');
+            this.icone.classList.replace('bi-balloon-heart', 'bi-balloon-heart-fill');
         else {
-            icone.classList.replace('bi-balloon-heart-fill', 'bi-balloon-heart');
+            this.icone.classList.replace('bi-balloon-heart-fill', 'bi-balloon-heart');
         }
     }
 
+    private gerarElenco(): void {
 
-    private gerarElenco(filme: IMidiaDetalhes) {
-        const divElenco = document.getElementById('elenco') as HTMLUListElement;
-        divElenco.classList.add('d-flex', 'flex-row', 'justify-content-between', 'mb-2')
-        const elenco = filme.creditos.cast.slice(0, 5)
+        this.divElenco.classList.add('d-flex', 'flex-row', 'justify-content-between', 'mb-2');
 
+        const elenco = this.midia.creditos.cast.slice(0, 5);
         elenco.forEach((x: any) => {
             let link = document.createElement('a') as HTMLAnchorElement;
-
             link.classList.add(
 
                 'link-secondary',
@@ -250,9 +216,18 @@ export class Detalhes {
             link.href = `pessoa.html?id=${x.id}`;
             link.innerText = x.name;
 
-            divElenco.appendChild(link);
+            this.divElenco.appendChild(link);
 
         })
+    }
+    public pesquisar(event: Event): any {
+        event.preventDefault()
+        window.location.href = this.construirUrl()
+    }
+
+    private construirUrl() {
+        const query = this.input.value.split(" ").join("-");
+        return `midia.html?tag=search/multi&query=${query}`
     }
 }
 

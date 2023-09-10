@@ -2,18 +2,23 @@ import './pessoa.css'
 import { IMidia } from "../../models/midia";
 import { IPessoa } from "../../models/pessoa";
 import { ServicoPessoas } from "../../services/service-pessoas";
-import { TelaBase } from "../compartilhado/base";
+import { TelaBase } from "../midia/base";
 
 
 export class TelaPessoas extends TelaBase {
 
     servicoPessoa: ServicoPessoas
-
+    input: HTMLInputElement;
+    btnPesquisar: HTMLButtonElement;
+    nome: HTMLElement;
+    local: HTMLElement;
+    biografia: HTMLElement;
+    img: HTMLImageElement;
 
     constructor() {
         super()
 
-        this.servicoPessoa = new ServicoPessoas();
+        this.inicializarPropriedades();
 
         const url = new URLSearchParams(window.location.search);
 
@@ -23,12 +28,21 @@ export class TelaPessoas extends TelaBase {
     }
 
 
+    private inicializarPropriedades() {
+        this.servicoPessoa = new ServicoPessoas();
+        this.input = document.getElementById('input') as HTMLInputElement;
+        this.btnPesquisar = document.getElementById('btnPesquisar') as HTMLButtonElement;
+        this.nome = document.getElementById('nome') as HTMLElement;
+        this.local = document.getElementById('localNascimento') as HTMLElement;
+        this.biografia = document.getElementById('biografia') as HTMLElement;
+        this.img = document.getElementById('img01') as HTMLImageElement;
+    }
+
     private async buscarPessoa(id: string) {
         try {
             const pessoa = await this.servicoPessoa.obterPessoaPorId(id);
 
             this.renderizar(pessoa)
-
 
         } catch (error) {
             console.log(error)
@@ -62,21 +76,16 @@ export class TelaPessoas extends TelaBase {
     }
 
     private gerarDadosPessoais(pessoa: IPessoa) {
-        const nome = document.getElementById('nome') as HTMLElement;
-        const local = document.getElementById('localNascimento') as HTMLElement;
-        const biografia = document.getElementById('biografia') as HTMLElement;
-        const img = document.getElementById('img01') as HTMLImageElement;
 
-        console.log(pessoa)
-        nome.innerText = pessoa.nome;
+        this.nome.innerText = pessoa.nome;
 
-        local.innerText = `${pessoa.localNascimento} - ${pessoa.dataNascimento}`;
+        this.local.innerText = `${(pessoa.localNascimento ? pessoa.localNascimento : '')} - ${(pessoa.dataNascimento ? pessoa.dataNascimento : '')}`;
 
-        biografia.innerText = `${pessoa.biografia}`;
+        this.biografia.innerText = `${(pessoa.biografia ? pessoa.biografia : 'Sem informações disponíveis')}`;
 
         let imagem = pessoa.imagem ? pessoa.imagem : pessoa.obras.cast[0].backdrop_path;
 
-        img.src = `https://image.tmdb.org/t/p/w500${imagem}`;
+        this.img.src = `https://image.tmdb.org/t/p/w185${imagem}`;
     }
 
     private mapearMidias(obra: any): IMidia {
@@ -89,7 +98,16 @@ export class TelaPessoas extends TelaBase {
             resumo: obra.overview,
             tipo: obra.first_air_date ? 'tv' : 'movie'
         } as IMidia;
+    }
 
+    public pesquisar(event: Event): any {
+        event.preventDefault()
+        window.location.href = this.construirUrl()
+    }
+
+    private construirUrl() {
+        const query = this.input.value.split(" ").join("-");
+        return `midia.html?tag=search/multi&query=${query}`
     }
 }
 

@@ -1,5 +1,5 @@
 import 'bootstrap'
-import './base.css'
+import './midia.css'
 import { IMidia } from "../../models/midia";
 
 export abstract class TelaBase {
@@ -7,6 +7,11 @@ export abstract class TelaBase {
     protected divConteudo: HTMLDivElement;
 
     protected gerarCards(midias: IMidia[], tipoMidia: string): void {
+
+        if (midias.length == 0) {
+            this.mostrarAviso("Nenhuma mídia encontrada");
+            return;
+        }
 
         const subtitulo = document.createElement('h2');
         subtitulo.textContent = tipoMidia;
@@ -19,7 +24,7 @@ export abstract class TelaBase {
             if (midia.imagem == null) continue
 
             const card = document.createElement("div");
-            
+
             card.classList.add('col-xl-2', 'col-lg-4', 'col-md-6', 'col-sm-12', "card", 'p-2');
 
             card.id = midia.id.toString();
@@ -60,8 +65,7 @@ export abstract class TelaBase {
     }
 
     private obterAno(midia: IMidia): string {
-        const data = midia.data;
-        return data.substring(0, 4);
+        return midia.data ? midia.data.substring(0, 4) : " ";
     }
 
     private obterAvaliacao(midia: IMidia): string {
@@ -76,5 +80,19 @@ export abstract class TelaBase {
         const tipo = parent.getAttribute('tipo');
 
         window.location.href = `detalhes.html?id=${parent.id}&tag=${tipo}`;
+    }
+
+    protected mostrarAviso(texto: string): void {
+        let divAviso = document.createElement('div');
+        divAviso.classList.add('aviso');
+        let msg = document.createElement('p');
+        msg.classList.add('msgAviso');
+        msg.textContent = texto;
+        document.body.appendChild(divAviso);
+        divAviso.appendChild(msg);
+
+        setTimeout(() => {
+            document.body.removeChild(divAviso);
+        }, 2500);
     }
 }

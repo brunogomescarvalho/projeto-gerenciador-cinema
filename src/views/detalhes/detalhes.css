@@ -6,8 +6,8 @@
 } */
 
 .icone {
-    font-size: 2rem;
-    color: cornflowerblue;
+    font-size: xx-large !important;
+    color: rgb(107, 102, 102);
 }
 
 .text-justify {
@@ -31,3 +31,4 @@
 .btn-generos:hover {
     background-color: lightsalmon;
 }
+
