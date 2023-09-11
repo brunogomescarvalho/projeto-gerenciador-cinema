@@ -19,11 +19,8 @@ export class TelaPessoas extends TelaBase {
         super()
 
         this.inicializarPropriedades();
-
         const url = new URLSearchParams(window.location.search);
-
         const id = url.get('id') as string;
-
         this.buscarPessoa(id);
     }
 
@@ -36,6 +33,8 @@ export class TelaPessoas extends TelaBase {
         this.local = document.getElementById('localNascimento') as HTMLElement;
         this.biografia = document.getElementById('biografia') as HTMLElement;
         this.img = document.getElementById('img01') as HTMLImageElement;
+        this.divConteudo = document.getElementById('midias') as HTMLDivElement;
+        this.btnPesquisar.addEventListener('click', (event) => this.pesquisar(event))
     }
 
     private async buscarPessoa(id: string) {
@@ -58,8 +57,7 @@ export class TelaPessoas extends TelaBase {
     }
 
 
-    private gerarCardsFilmes(pessoa: IPessoa) {
-        this.divConteudo = document.getElementById('midias') as HTMLDivElement;
+    private async gerarCardsFilmes(pessoa: IPessoa) {
 
         const dados = pessoa.obras.cast as any[];
 
@@ -72,20 +70,25 @@ export class TelaPessoas extends TelaBase {
             midias.push(midia);
         }
 
-        this.gerarCards(midias, 'Obras');
+        await this.gerarCards(midias, 'Obras');
     }
 
     private gerarDadosPessoais(pessoa: IPessoa) {
 
         this.nome.innerText = pessoa.nome;
 
-        this.local.innerText = `${(pessoa.localNascimento ? pessoa.localNascimento : '')} - ${(pessoa.dataNascimento ? pessoa.dataNascimento : '')}`;
+        this.local.innerText = `${(pessoa.localNascimento ? pessoa.localNascimento : '')} - ${(pessoa.dataNascimento ? this.formatarData(pessoa.dataNascimento) : '')}`;
 
         this.biografia.innerText = `${(pessoa.biografia ? pessoa.biografia : 'Sem informações disponíveis')}`;
 
         let imagem = pessoa.imagem ? pessoa.imagem : pessoa.obras.cast[0].backdrop_path;
 
         this.img.src = `https://image.tmdb.org/t/p/w185${imagem}`;
+    }
+
+    private formatarData(dataNascimento: string): string {
+        const dataArray = dataNascimento.split("-") as string[];
+        return `${dataArray[2]}/${dataArray[1]}/${dataArray[0]}`;
     }
 
     private mapearMidias(obra: any): IMidia {

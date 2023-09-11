@@ -3,7 +3,7 @@ import { ServicoBase } from "./servico-base";
 
 export class ServicoMidia extends ServicoBase {
 
-    
+
     public async obterMidiaPorPesquisa(input: any): Promise<IMidia[]> {
         let url = `search/multi?query=${input}&language=pt-br&include_media_type=true`;
         return await this.obterListagem(url);
@@ -46,7 +46,7 @@ export class ServicoMidia extends ServicoBase {
             nome: obj.title ? obj.title : obj.name,
             resumo: obj.overview,
             votos: obj.vote_count,
-            tipo:  obj.title ? 'movie' : 'tv',
+            tipo: obj.title ? 'movie' : 'tv',
         } as IMidiaDetalhes
     }
 }

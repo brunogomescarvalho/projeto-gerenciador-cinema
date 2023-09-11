@@ -4,7 +4,9 @@
 /* * {
     border: solid 1px red;
 } */
-
+.boby{
+    background-color: rgba(0, 0, 0, 0.721);
+}
 .icone {
     font-size: xx-large !important;
     color: rgb(107, 102, 102);

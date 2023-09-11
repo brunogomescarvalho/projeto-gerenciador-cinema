@@ -117,10 +117,21 @@ export class Detalhes {
         this.descricao.innerText = this.midia.resumo;
         this.img01.src = `https://image.tmdb.org/t/p/w342${this.midia.imagem}`;
 
-        if (this.midia.creditos.crew.length > 0) {
-            const diretor = this.midia.creditos.crew.find((x: any) => x.department == "Directing" || x.department == "Production");
+        console.log(this.midia)
 
-            this.txtDiretor.textContent = `${(diretor.department === "Directing" ? "Dirigido" : "Produzido")} por ${diretor.name}`;
+        const producao = this.midia.creditos.crew;
+
+        if (producao.length > 0) {
+            const diretor = producao.find((x: any) =>
+                x.department == "Directing" ||
+                x.department == "Production" ||
+                x.department == "Writing");
+
+            this.txtDiretor.textContent =
+                `${(diretor.department ===
+                    "Directing" ? "Dirigido" :
+                    "Production" ? "Produzido" :
+                        "Escrito")} por ${diretor.name}`;
         }
 
         let data = document.createElement('p') as HTMLElement;

@@ -15,17 +15,12 @@ export class TelaMidia extends TelaBase {
 
 
     constructor() {
-
         super();
 
         this.inicializarPropriedades();
-
         this.incluirEventos();
-
         const params = this.obterParametros();
-
         this.obterListas(params);
-
     }
 
     private inicializarPropriedades() {
@@ -38,11 +33,8 @@ export class TelaMidia extends TelaBase {
 
     private obterParametros() {
         const url = new URLSearchParams(window.location.search);
-
         const query = url.get('query') as string;
-
         const tag = url.get('tag') as string;
-
         return { query: query, tag: tag };
 
     }
@@ -54,46 +46,45 @@ export class TelaMidia extends TelaBase {
     private async obterListas(params: any): Promise<void> {
         let tipo: string = this.obterNomeDaLista(params.tag);
 
-        try {
-
-            switch (tipo) {
-                case "Favoritos": this.buscarFavoritos(); break;
-                case "Gênero": this.buscarPorGenero(params, tipo); break;
-                case "Pesquisa": this.buscarPorPesquisa(params, tipo); break;
-                default: this.buscarPorCategoria(params, tipo); break;
-            }
-        }
-        catch (error) {
-            console.log(error);
-            this.mostrarAviso('Nenhuma mídia encontrada!')
+        switch (tipo) {
+            case "Favoritos": await this.buscarFavoritos(); break;
+            case "Gênero": await this.buscarPorGenero(params, tipo); break;
+            case "Pesquisa": await this.buscarPorPesquisa(params, tipo); break;
+            default: await this.buscarPorCategoria(params, tipo); break;
         }
     }
 
     private async buscarFavoritos() {
         let dados = this.servicoLocalStorage.listarFavoritos() as any[] || null;
-        
+
         let listaFavoritos: IMidia[] = [];
 
         for (let dado of dados) {
             listaFavoritos.push(await this.servicoMidia.obterMidiaPorId(`${dado.tipo}/${dado.id}`));
         }
 
-        this.gerarCards(listaFavoritos, "Series e Filmes");
+        this.gerarCards(listaFavoritos, "Séries e Filmes");
     }
 
     private async buscarPorGenero(params: any, tipo: string) {
-        let lista = await this.servicoMidia.obterMidiaPorGeneros(params.tag);
-        this.gerarCards(lista, tipo)
+        try {
+            let lista = await this.servicoMidia.obterMidiaPorGeneros(params.tag);
+            await this.gerarCards(lista, tipo)
+        }
+        catch (error) {
+            this.mostrarAviso("Nenhum filme para a pesquisa selecionada")
+        }
     }
 
     private async buscarPorPesquisa(params: any, tipo: string) {
+
         let lista = await this.servicoMidia.obterMidiaPorPesquisa(params.query.split("-").join(" "));
-        this.gerarCards(lista, tipo)
+        await this.gerarCards(lista, tipo)
     }
 
     private async buscarPorCategoria(params: any, tipo: string) {
         let lista = await this.servicoMidia.obterMidiaPorCategoria(params.tag)
-        this.gerarCards(lista, tipo)
+        await this.gerarCards(lista, tipo)
     }
 
     private obterNomeDaLista(params: string): string {

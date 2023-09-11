@@ -1,12 +1,16 @@
 @import url('../../../node_modules/bootstrap/dist/css/bootstrap.min.css');
 
-body {
-    background-color: rgb(251, 251, 255);
+.imagem:hover {
+    border: solid rgb(218, 145, 99) 2px;
+    cursor: pointer;
 }
 
-.card:hover {
-    border: solid rgb(99, 178, 218) 2px;
-    cursor: pointer;
+.imagem {
+    border: 'none';
+}
+
+.card {
+    border: none;
 }
 
 .aviso {

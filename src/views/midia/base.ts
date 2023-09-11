@@ -6,7 +6,7 @@ export abstract class TelaBase {
 
     protected divConteudo: HTMLDivElement;
 
-    protected gerarCards(midias: IMidia[], tipoMidia: string): void {
+    protected async gerarCards(midias: IMidia[], tipoMidia: string): Promise<void> {
 
         if (midias.length == 0) {
             this.mostrarAviso("Nenhuma mídia encontrada");
@@ -18,48 +18,40 @@ export abstract class TelaBase {
         subtitulo.classList.add('text-secondary', "fw-light", 'fs-3', 'text-center')
         this.divConteudo.appendChild(subtitulo);
 
-        for (let i = 0; i < midias.length; i++) {
-            const midia = midias[i];
-
+        for await (let midia of midias) {
+           
             if (midia.imagem == null) continue
 
-            const card = document.createElement("div");
-
-            card.classList.add('col-xl-2', 'col-lg-4', 'col-md-6', 'col-sm-12', "card", 'p-2');
-
-            card.id = midia.id.toString();
-
-            card.setAttribute('tipo', midia.tipo);
+            const divCard = document.createElement("div");
+            divCard.classList.add('col-xl-2', 'col-lg-4', 'col-md-6', 'col-sm-12', 'text-center');
+            divCard.id = midia.id.toString();
+            divCard.setAttribute('tipo', midia.tipo);
 
             const imagem = document.createElement("img");
-            imagem.src = `https://image.tmdb.org/t/p/w500${midia.imagem}`;
-            card.appendChild(imagem);
-
-            const titulo = document.createElement("span");
-            titulo.textContent = `${midia.nome}`;
-            titulo.classList.add('col', 'text-center', 'p-2', 'fs-6');
-            card.appendChild(titulo)
-
-            const linha = document.createElement("hr");
-            card.appendChild(linha);
+            imagem.src = `https://image.tmdb.org/t/p/original${midia.imagem}`;
+            imagem.classList.add('img-thumbnail', 'p-0', 'imagem')
+            divCard.appendChild(imagem);
 
             const informacoes = document.createElement('div');
-            informacoes.classList.add('d-flex', 'flex-row', 'justify-content-evenly');
-            card.appendChild(informacoes);
+            informacoes.classList.add('d-flex', 'flex-column', 'justify-content-evenly');
+            divCard.appendChild(informacoes);
+
+            const titulo = document.createElement("a");
+            titulo.textContent = `${midia.nome}`;
+            titulo.href = `detalhes.html?id=${midia.id}&tag=${midia.tipo}`;
+            titulo.classList.add('text-center', 'pt-2', 'link-offset-2', 'link-offset-3-hover',
+                'link-underline', 'link-underline-opacity-0', 'link-underline-opacity-75-hover');
+
+            informacoes.appendChild(titulo)
 
             const data = document.createElement("span");
             data.textContent = `Ano: ${this.obterAno(midia)} `;
-            data.classList.add('text-secondary', 'fs-5', 'fw-light');
+            data.classList.add('text-secondary', 'fs-6', 'fw-light');
             informacoes.appendChild(data);
 
-            const avaliacao = document.createElement("span");
-            avaliacao.textContent = `Avaliação: ${this.obterAvaliacao(midia)} `;
-            avaliacao.classList.add('fs-6', 'fst-italic');
-            informacoes.appendChild(avaliacao);
+            this.divConteudo.appendChild(divCard);
 
-            this.divConteudo.appendChild(card);
-
-            card.addEventListener('click', (event: Event) => this.obterDetalhes(event));
+            imagem.addEventListener('click', (event: Event) => this.obterDetalhes(event));
 
         }
     }
@@ -68,15 +60,10 @@ export abstract class TelaBase {
         return midia.data ? midia.data.substring(0, 4) : " ";
     }
 
-    private obterAvaliacao(midia: IMidia): string {
-        const avaliacao = Math.round(midia.avaliacao);
-        return `${avaliacao}/10`
-    }
 
     private obterDetalhes(event: Event): any {
-
-        const card = event.target as HTMLElement;
-        const parent = card.parentElement as HTMLDivElement;
+        const divCard = event.target as HTMLElement;
+        const parent = divCard.parentElement as HTMLDivElement;
         const tipo = parent.getAttribute('tipo');
 
         window.location.href = `detalhes.html?id=${parent.id}&tag=${tipo}`;
